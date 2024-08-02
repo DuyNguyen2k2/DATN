@@ -6,7 +6,8 @@ import Slider4 from "../../assets/images/slide4.webp";
 import Slider5 from "../../assets/images/slide5.webp";
 import Slider6 from "../../assets/images/slide6.webp";
 import { SliderComponent } from "../../components/SliderComponent/SliderComponent";
-
+import { CardComponent } from "../../components/CardComponent/CardComponent";
+import { ButtonComponent } from "../../components/ButtonComponent/ButtonComponent";
 
 export const HomePage = () => {
   const arr = ["TV", "Tu Lanh", "Laptop"];
@@ -28,8 +29,28 @@ export const HomePage = () => {
               arrImages={[Slider1, Slider2, Slider3, Slider4, Slider5, Slider6]}
             />
           </div>
+          <div className="mt-10 flex flex-wrap gap-2 justify-center">
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
           </div>
+          <div className="flex justify-center items-center mt-4">
+            <ButtonComponent
+              textButton="Xem thêm"
+              size="large"
+              type="primary"
+              className="rounded mb-5"
+              
+            />
           </div>
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
