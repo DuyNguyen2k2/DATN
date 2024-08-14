@@ -1,18 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Image } from "antd";
+import { Image, message } from "antd";
 import { ButtonComponent } from "../../components/ButtonComponent/ButtonComponent";
 import { InputForm } from "../../components/InputForm/InputForm";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
-
+import * as UserService from "../../services/UserServices";
+import { useMutationHooks } from "../../hooks/useMutationHook";
+import { Loading } from "../../components/LoadingComponent/Loading";
 
 export const SignUpPage = () => {
   const navigate = useNavigate();
   const handleLogin = () => {
     navigate("/sign-in");
   };
-
+  const mutation = useMutationHooks((data) => UserService.signUp(data));
   const [isShowPassword, setIsShowPassword] = useState(false);
   const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -20,9 +22,25 @@ export const SignUpPage = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [messageApi, contextHolder] = message.useMessage();
+  const { isLoading, data } = mutation;
+  useEffect(() => {
+    if (data?.status === "OK") {
+      messageApi.open({
+        type: "success",
+        content: data?.message,
+      });
+      setTimeout(() => {
+        handleLogin();
+      }, 1000);
+    } else if (data?.status === "ERR") {
+      messageApi.open({
+        type: "error",
+        content: data?.message,
+      });
+    }
+  }, [data]);
 
-
- 
   const handleOnchangeEmail = (value) => {
     setEmail(value);
   };
@@ -39,13 +57,15 @@ export const SignUpPage = () => {
   const handleOnchangeConfirmPassword = (value) => {
     setConfirmPassword(value);
   };
- 
+  const handleSignUp = () => {
+    mutation.mutate({ name, phone, email, password, confirmPassword });
+  };
   return (
     <div
       className="flex justify-center items-center h-[100vh] px-5"
       style={{ background: "rgba(0,0,0,0.53)" }}
     >
-      
+      {contextHolder}
       <div className="min-[770px]:w-[800px] min-[770px]:h-[445px] rounded-lg bg-white flex">
         <div className="min-[770px]:w-[500px] pt-10 pb-6 px-[45px] flex flex-1 flex-col">
           <div className="">
@@ -107,8 +127,10 @@ export const SignUpPage = () => {
               value={confirmPassword}
               handleonchange={handleOnchangeConfirmPassword}
             />
-            
-         
+            {data?.status === "ERR" && (
+              <span className="text-red-500">{data?.message}</span>
+            )}
+            <Loading isLoading={isLoading}>
               <ButtonComponent
                 disabled={
                   !name.length ||
@@ -117,14 +139,14 @@ export const SignUpPage = () => {
                   !password.length ||
                   !confirmPassword.length
                 }
-                
+                onClick={handleSignUp}
                 className="rounded w-full mt-[20px] mb-[10px]"
                 danger
                 type="primary"
                 textButton="Đăng Ký"
                 size="large"
               />
-            
+            </Loading>
             <p className="text-sm">
               Đã có tài khoản?{" "}
               <span
